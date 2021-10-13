@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Task;
 
@@ -12,71 +13,61 @@ class HomeController extends Controller
         echo 222;
     }
 
-    public function insertTask()
+    public function getInsertForm()
     {
+        return view('insert');
+    }
+
+    public function insertTask(Request $request)
+    {
+        $content = $request->input('content', "");
+        $owner = $request->input('owner', "");
+
         $newTask = new Task();
-        $newTask->content = "Vyniest smeti";
-        $newTask->owner = "Martin";
+        $newTask->content = $content;
+        $newTask->owner = $owner;
 
         $newTask->save();
 
-        echo $newTask->id;
+        return redirect()->route('select-all-tasks');
     }
 
     public function selectTask($id)
     {
         $task = Task::find($id);
-        if($task) {
-            echo $task->id . "<br>";
-            echo $task->content . "<br>";
-            echo $task->owner . "<br>";
-            echo $task->created_at . "<br>";
-        } else {
-            echo "Taky task neni";
-        }
+        return view('select', ['task' => $task]);
     }
 
     public function selectAllTasks()
     {
         $tasks = Task::all();
-        foreach ($tasks as $task) {
-            echo $task->id . "<br>";
-            echo $task->content . "<br>";
-            echo $task->owner . "<br>";
-            echo $task->created_at . "<br>";
-            echo "------------------------------------<br>";
-        }
+        return view('select-all', ['tasks' => $tasks]);
     }
 
-    public function updateTaskOwner($id, $owner)
+    public function getUpdateForm($id)
     {
         $task = Task::find($id);
-        if($task) {
-            $task->owner = $owner;
-            $task->update();
-            echo "Zaznam uspesne zmeneny";
-        } else {
-            echo "Taky task neni";
-        }
+        return view('update', ['task' => $task]);
+    }
+
+    public function updateTaskOwner(Request $request)
+    {
+        $id = $request->input('id', 1);
+        $content = $request->input('content', "");
+        $owner = $request->input('owner', "");
+
+        $task = Task::find($id);
+        $task->owner = $owner;
+        $task->content = $content;
+        $task->update();
+
+        return redirect()->route('select', ['id' => $id]);
     }
 
     public function deleteTask($id)
     {
-        $task = Task::find($id);
-        if($task) {
-            $data = [
-                'id' => $task->id,
-                'owner' => $task->owner,
-                'content' => $task->content
-            ];
-            $task->delete();
-            echo "Uloha: " . "<br>";
-            echo $data['id'] . "<br>";
-            echo $data['owner'] . "<br>";
-            echo $data['content'] . "<br>";
-            echo "Vyamazana";
-        } else {
-            echo "Taky task neni";
-        }
+        $task = Task::findOrFail($id);
+        $task->delete();
+        return redirect()->route('select-all-tasks');
     }
 }

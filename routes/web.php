@@ -19,8 +19,10 @@ Route::get('/', function () {
 });
 
 Route::get('/test', [HomeController::class, 'test']);
-Route::get('/insert-task', [HomeController::class, 'insertTask']);
-Route::get('/select-task/{id}', [HomeController::class, 'selectTask']);
-Route::get('/select-all-tasks', [HomeController::class, 'selectAllTasks']);
-Route::get('/update-task/{id}/{owner}', [HomeController::class, 'updateTaskOwner']);
-Route::get('/delete-task/{id}', [HomeController::class, 'deleteTask']);
+Route::get('/insert-task-form', [HomeController::class, 'getInsertForm'])->name('insert-form');
+Route::post('/insert-task', [HomeController::class, 'insertTask'])->name('insert');
+Route::get('/select-task/{id}', [HomeController::class, 'selectTask'])->name('select');
+Route::get('/select-all-tasks', [HomeController::class, 'selectAllTasks'])->name('select-all-tasks');
+Route::get('/update-task-form/{id}', [HomeController::class, 'getUpdateForm'])->name('update-form');
+Route::post('/update-task', [HomeController::class, 'updateTaskOwner'])->name('update');
+Route::get('/delete-task/{id}', [HomeController::class, 'deleteTask'])->name('delete');
