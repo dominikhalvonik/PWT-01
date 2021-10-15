@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class HomeController extends Controller
@@ -12,64 +13,61 @@ class HomeController extends Controller
         echo 222;
     }
 
-    public function insertTask()
+    public function getInsertForm()
     {
+        return view('insert');
+    }
+
+    public function insertTask(Request $request)
+    {
+        $content = $request->input('content', '');
+        $owner = $request->input('owner', '');
+
         $task = new Task();
-        $task->content = "Uprac izbu";
-        $task->owner = "Peto";
+        $task->content = $content;
+        $task->owner = $owner;
+
         $task->save();
 
-        echo $task->id;
+        return redirect()->route('select-all');
     }
 
     public function selectTask($id)
     {
         $task = Task::find($id);
-        if($task) {
-            echo "Uloha s id ".$id."<br>";
-            echo $task->content."<br>";
-            echo $task->owner."<br>";
-        } else {
-            echo "Uloha neexistuje";
-        }
+        return view('select', ['task' => $task]);
     }
 
     public function selectAll()
     {
-        $tasks = Task::all();
-        foreach ($tasks as $task) {
-            echo $task->id . "<br>";
-            echo $task->content . "<br>";
-            echo $task->owner . "<br>";
-            echo $task->created_at . "<br>";
-            echo $task->updated_at . "<br>";
-            echo "--------------------------<br>";
-        }
+        $tasks = Task::all()->sortBy('id');
+        return view('select-all', ['tasks' => $tasks]);
     }
 
-    public function updateTask($id, $owner)
+    public function getUpdateForm($id)
     {
         $task = Task::find($id);
+        return view('update', ['task' => $task]);
+    }
 
-        if($task) {
-            $task->owner = $owner;
-            $task->update();
-            echo "Uloha aktualizovana";
-        } else {
-            echo "Uloha neexistuje";
-        }
+    public function updateTask(Request $request)
+    {
+        $id = $request->input('id', 1);
+        $content = $request->input('content', '');
+        $owner = $request->input('owner', '');
+
+        $task = Task::findOrFail($id);
+        $task->content = $content;
+        $task->owner = $owner;
+        $task->update();
+
+        return redirect()->route('select', ['id' => $id]);
     }
 
     public function deleteTask($id)
     {
-        $task = Task::find($id);
-
-        if($task) {
-            $task->delete();
-            echo "Uloha zmazana";
-        } else {
-            echo "Uloha neexistuje";
-        }
-
+        $task = Task::findOrFail($id);
+        $task->delete();
+        return redirect()->route('select-all');
     }
 }
