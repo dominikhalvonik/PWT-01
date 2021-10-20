@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Owner;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Task;
@@ -23,9 +24,17 @@ class HomeController extends Controller
         $content = $request->input('content', "");
         $owner = $request->input('owner', "");
 
+        $existingOwner = Owner::where('owner_name', '=', $owner)->first();
+        if(!$existingOwner) {
+            $existingOwner = new Owner();
+            $existingOwner->owner_name = $owner;
+            $existingOwner->email = mt_rand(0,50) . "@gmail.com";
+            $existingOwner->save();
+        }
+
         $newTask = new Task();
         $newTask->content = $content;
-        $newTask->owner = $owner;
+        $newTask->owner_id = $existingOwner->id;
 
         $newTask->save();
 
@@ -56,10 +65,13 @@ class HomeController extends Controller
         $content = $request->input('content', "");
         $owner = $request->input('owner', "");
 
-        $task = Task::find($id);
-        $task->owner = $owner;
-        $task->content = $content;
-        $task->update();
+        $dbOwner = Owner::where('owner_name', '=', $owner)->first();
+        if($dbOwner) {
+            $task = Task::find($id);
+            $task->content = $content;
+            $task->owner_id = $dbOwner->id;
+            $task->update();
+        }
 
         return redirect()->route('select', ['id' => $id]);
     }

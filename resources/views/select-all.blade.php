@@ -11,7 +11,7 @@
             <tr>
                 <td>{{ $task->id }}</td>
                 <td>{{ $task->content }}</td>
-                <td>{{ $task->owner }}</td>
+                <td>{{ $task->owner->owner_name }}</td>
                 <td>{{ date("d.m.Y", strtotime($task->created_at)) }}</td>
                 <td><a href="{{ route('delete', ['id' => $task->id]) }}">Vymaz</a></td>
                 <td><a href="{{ route('select', ['id' => $task->id]) }}">Detail</a></td>

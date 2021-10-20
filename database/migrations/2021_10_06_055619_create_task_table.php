@@ -13,12 +13,14 @@ class CreateTaskTable extends Migration
      */
     public function up()
     {
-        Schema::create('task', function (Blueprint $table) {
-            $table->id();
-            $table->string('content',255);
-            $table->string('owner',150);
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('task')) {
+            Schema::create('task', function (Blueprint $table) {
+                $table->id();
+                $table->string('content',255);
+                $table->string('owner',150);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

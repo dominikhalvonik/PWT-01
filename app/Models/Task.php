@@ -18,5 +18,13 @@ class Task extends Model
      *
      * @var array
      */
-    protected $fillable = ['content', 'owner'];
+    protected $fillable = ['content'];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function owner()
+    {
+        return $this->belongsTo(Owner::class);
+    }
 }
